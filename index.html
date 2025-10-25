@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ten-Minute Pulse</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f7f9fb;
+      color: #0a143c;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #00b7b3; }
+    button {
+      background-color: #00b7b3;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #009a96; }
+    canvas { max-width: 600px; margin: 40px auto; display: block; }
+  </style>
+</head>
+<body>
+  <h1>Ten-Minute Pulse</h1>
+  <p>Boston news sentiment -- updated by real headlines.</p>
+  <button onclick="generateMood()">Generate Mood Map</button>
+  <canvas id="moodChart"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    async function generateMood() {
+      const response = await fetch("mood_data.json");
+      const data = await response.json();
+      const moods = Object.keys(data);
+      const counts = Object.values(data);
+
+      const ctx = document.getElementById("moodChart").getContext("2d");
+      if (window.moodChartInstance) window.moodChartInstance.destroy();
+
+      window.moodChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: moods,
+          datasets: [{
+            label: "Mood Counts",
+            data: counts,
+            backgroundColor: ["#00b7b3", "#efe7d8", "#ff1e8a"]
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+  </script>
+</body>
+</html>
